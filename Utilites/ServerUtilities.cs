@@ -1,4 +1,5 @@
 using ProjectM;
+using ProjectM.Network;
 using Unity.Entities;
 
 namespace SleepyDice.Utilites;
@@ -6,6 +7,8 @@ namespace SleepyDice.Utilites;
 public class ServerUtilities{
     private static World? _serverWorld;
     public static EntityManager EntityManager => Server.EntityManager;
+    public static UserActivityGridSystem UserActivityGridSystem =>  Server.GetExistingSystemManaged<UserActivityGridSystem>();
+    public static ServerBootstrapSystem  ServerBootstrapSystem =>  Server.GetExistingSystemManaged<ServerBootstrapSystem>();
     
     public static World Server {
         get {

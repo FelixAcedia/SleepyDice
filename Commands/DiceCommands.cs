@@ -2,7 +2,11 @@ using System;
 using SleepyDice.Models;
 using SleepyDice.Utilites;
 using ProjectM;
+using ProjectM.Network;
+using SleepyDice.Service;
+using Stunlock.Network;
 using Unity.Collections;
+using Unity.Entities;
 using VampireCommandFramework;
 using static SleepyDice.Service.DiceService;
 
@@ -40,6 +44,26 @@ public class DiceCommands{
                                               "] in [" +
                                               Format.Color(color, $"{result + modify}") +
                                               "]");
-        ServerChatUtils.SendSystemMessageToAllClients(ServerUtilities.EntityManager, ref fixedString);
+        
+        switch (ctx.Event.Type) {
+            case ChatMessageType.Whisper:
+                ctx.Reply("Dice rolling doesn't work within Whispers");
+                break;
+            case ChatMessageType.Team:
+                ctx.Reply("Dice rolling doesn't work within Clan Chat");
+                break;
+            case ChatMessageType.Local:
+                var users = UserService.GetUsersInRange(PlayerModel.GetCharacterPosition(ctx.User.LocalCharacter._Entity));
+                foreach (int userIndex in users) {
+                    ServerChatUtils.SendSystemMessageToClient(ServerUtilities.EntityManager, 
+                        UserService.GetUser(ServerUtilities.ServerBootstrapSystem._ApprovedUsersLookup[userIndex].UserEntity),
+                        ref fixedString);
+                }
+                break;
+            default:
+                ServerChatUtils.SendSystemMessageToAllClients(ServerUtilities.EntityManager, ref fixedString);
+                break;
+            
+        }
     }
 }
