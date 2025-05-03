@@ -36,9 +36,9 @@ public class DiceCommands{
         char modifyChar = modify >= 0 ? '+' : '-';
         
         FixedString512Bytes fixedString = new($"{ctx.User.CharacterName} rolled with {amount}d{die}{modifyChar}{modify} and got [{String.Join(',', rolls)}] - resulting with [" +
-                                              ChatUtilities.Color(color, $"{result}") + 
+                                              Format.Color(color, $"{result}") + 
                                               "] in [" +
-                                              ChatUtilities.Color(color, $"{result + modify}") +
+                                              Format.Color(color, $"{result + modify}") +
                                               "]");
         ServerChatUtils.SendSystemMessageToAllClients(ServerUtilities.EntityManager, ref fixedString);
     }
