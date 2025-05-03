@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using SleepyDice.Models;
 
 namespace SleepyDice.Service;
 
@@ -7,7 +8,7 @@ internal class DiceService{
     
     public static Random _Random = new Random();
 
-    public static byte[] ValidDie = [
+    public static int[] ValidDie = [
         4, 
         6, 
         8, 
@@ -17,10 +18,10 @@ internal class DiceService{
         100
     ];
     
-    public static bool IsValidThrow(byte amount) => amount <= 4;
-    public static bool IsValidDie(byte die) => ValidDie.Contains(die);
+    public static bool IsValidThrow(int amount) => amount > 0 && amount <= 4;
+    public static bool IsValidDie(int die) => ValidDie.Contains(die);
 
-    public static bool IsValidRoll(string rollstring, out byte amount, out byte die, out sbyte modify, out string error) {
+    public static bool IsValidRoll(string rollstring, out int amount, out int die, out int modify, out string error) {
         amount = 0;
         die = 0;
         modify = 0;
@@ -35,7 +36,7 @@ internal class DiceService{
             return false;
         }
         string[] args = rollstring.Split(new[] { 'd', '+', '-'});
-        if (!byte.TryParse(args[0], out amount) && args[0] == "")
+        if (!int.TryParse(args[0], out amount) && args[0] == "")
             amount = 1;
         else if (!IsValidThrow(amount)) {
             error = "Invalid amount of throws";
@@ -56,16 +57,24 @@ internal class DiceService{
             }
             
         }
-        return byte.TryParse(args[1], out die) && IsValidDie(die) ;
+        return int.TryParse(args[1], out die) && IsValidDie(die) ;
     }
     
-    public static byte RollSingleDice(byte die) => (byte)_Random.Next(1, die - 1);
+    public static int RollSingleDie(int die) => _Random.Next(1, die + 1);
 
-    public static byte[] RollMultipleDices(int die, int count) {
-        byte[] rolls = new byte[count];
-        for (int i = 0; i < count; i++) {
-             rolls[i] = (byte)_Random.Next(1, die - 1);
-        }
-        return rolls;
+    public static int RollMultipleDices(DiceModel mode, int die, int amount, out int[] rolls) {
+        rolls = Enumerable.Repeat(0, amount).Select(x => RollSingleDie(die)).ToArray();
+        return mode switch {
+            DiceModel.Sum => rolls.Sum(x => x),
+            DiceModel.Highest => rolls.Max(),
+            DiceModel.Lowest => rolls.Min(),
+            _ => throw new System.Exception("Invalid mode")
+        };
+    }
+
+    public static string GetResultFormat(int result, DiceModel mode, int die, int amount, int modify) {
+        if (result == 1 + modify) return "#E90000";
+        else if ((mode != DiceModel.Sum && result == die + modify) || result == die*amount + modify) return "#7FE030";
+        else return "#E67E22";
     }
 }

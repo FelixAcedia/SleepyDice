@@ -14,7 +14,8 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Test")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.1.10.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.10+1.Branch.main.Sha.c33d0879382e1a0da34861ec55914ba7e637a80e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.10+1.Branch.main.Sha.c33d0879382e1a0da34861ec55914ba7e637a80e.c9c46c56be2fb12" +
+    "8444d089a53b6f919b624dafb")]
 [assembly: System.Reflection.AssemblyProductAttribute("SleepyDice")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SleepyDice")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.1.10.0")]
