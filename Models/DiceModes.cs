@@ -2,7 +2,7 @@ using System.Linq;
 
 namespace SleepyDice.Models;
 
-public enum DiceModel {
+public enum DiceModes {
     Sum,
     Highest,
     Lowest

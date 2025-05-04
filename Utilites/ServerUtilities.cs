@@ -1,5 +1,6 @@
 using ProjectM;
 using ProjectM.Network;
+using ProjectM.Scripting;
 using Unity.Entities;
 
 namespace SleepyDice.Utilites;

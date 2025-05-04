@@ -5,6 +5,7 @@ using SleepyDice.Models;
 using SleepyDice.Service;
 using SleepyDice.Utilites;
 using Unity.Collections;
+using Unity.Entities;
 using VampireCommandFramework;
 using static SleepyDice.Service.DiceService;
 
@@ -16,8 +17,10 @@ namespace SleepyDice.Commands;
 [CommandGroup("dice", "d")]
 public class DiceCommands{
     [Command("roll", "r", null, "Rolls a dice")]
-    public void Roll(ChatCommandContext ctx, string dies = "1d20", DiceModel mode = DiceModel.Sum)
-    {
+    public void Roll(ChatCommandContext ctx, string dies = "1d20", DiceModes mode = DiceModes.Sum) {
+        User user = ctx.User;
+        Entity entity = user.LocalCharacter._Entity;
+        
         if (!IsValidRoll(dies, out int amount, out int die, out int modify, out string error)) {
             ctx.Reply(error);
             return;
@@ -26,22 +29,22 @@ public class DiceCommands{
         FixedString512Bytes fixedString = new FixedString512Bytes();
         int result = 0;
         if (amount == 1) {
-            result = RollSingleDie(die) + modify;
+            result = RollDie(die) + modify;
             fixedString = $"{ctx.User.CharacterName} rolled with {amount}d{die}{modify:+##;-##;''} - resulting in [" +
                           Format.Color($"{result}", GetResultFormat(result, mode, die, amount, modify)) + 
-                          "]";;
+                          "]";
         }
         else {
-            result = RollMultipleDices(mode, die, amount, out int[] rolls);
+            result = RollDices(mode, die, amount, out int[] rolls) + modify;
             fixedString = $"{ctx.User.CharacterName} rolled with {amount}d{die}{modify:+##;-##;''}, rolling [{String.Join(',', rolls)}] - resulting in [" +
                           Format.Color($"{result}", GetResultFormat(result, mode, die, amount, modify)) + 
-                          "]";;
+                          "]";
 
         }
         
         switch (ctx.Event.Type) {
             case ChatMessageType.Whisper:
-                ctx.Reply("Dice rolling doesn't work within Whispers");
+                ctx.Reply("Dice rolling doesn't work within Whisper Chat");
                 break;
             case ChatMessageType.Team:
                 ctx.Reply("Dice rolling doesn't work within Clan Chat");
