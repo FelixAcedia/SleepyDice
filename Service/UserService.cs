@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Il2CppInterop.Runtime;
+using ProjectM;
 using ProjectM.Network;
+using ProjectM.UI;
 using SleepyDice.Utilites;
+using Stunlock.Network;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -19,6 +22,10 @@ public static class UserService{
         return userBitMask.GetUsers();
     }
 
-    // public static UserBitMask128.Enumerable GetClanAllies(Entity userEntity, Entity clanEntity) {
-    // }
+    public static NativeList<Entity> GetClanAllies(Entity userEntity) {
+        TeamReference unitTeam = ServerUtilities.EntityManager.GetComponentData<TeamReference>(userEntity);
+        var teamEntities = new NativeList<Entity>(Allocator.Temp);
+        TeamUtility.GetAlliedUsers(ServerUtilities.EntityManager, unitTeam, teamEntities);
+        return teamEntities;
+    }
 }
