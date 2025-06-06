@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Il2CppInterop.Runtime;
+using ProjectM;
 using ProjectM.Network;
 using SleepyDice.Utilites;
 using Unity.Collections;
@@ -19,6 +20,18 @@ public static class UserService{
         return userBitMask.GetUsers();
     }
 
-    // public static UserBitMask128.Enumerable GetClanAllies(Entity userEntity, Entity clanEntity) {
-    // }
+    public static IEnumerable<Entity> GetClanAllies(Entity userEntity) {
+        Team unitTeam = ServerUtilities.EntityManager.GetComponentData<Team>(userEntity);
+        var teamEntities = ServerUtilities.EntityManager.CreateEntityQuery(new EntityQueryDesc() { All = new ComponentType[] {
+                ComponentType.ReadOnly<Team>()
+            },
+                Options = EntityQueryOptions.IncludeDisabled
+        }).ToEntityArray(Allocator.Temp);
+        foreach (Entity members in teamEntities) {
+            if (ServerUtilities.EntityManager.GetComponentData<Team>(members).Clan == unitTeam.Clan) {
+                yield return members;
+            }
+        }
+        teamEntities.Dispose();
+    }
 }

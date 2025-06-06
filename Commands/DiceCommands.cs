@@ -16,6 +16,7 @@ namespace SleepyDice.Commands;
 /// </summary>
 [CommandGroup("dice", "d")]
 public class DiceCommands{
+
     [Command("roll", "r", null, "Rolls a dice")]
     public void Roll(ChatCommandContext ctx, string dies = "1d20", DiceModes mode = DiceModes.Sum) {
         User user = ctx.User;
@@ -39,7 +40,6 @@ public class DiceCommands{
             fixedString = $"{ctx.User.CharacterName} rolled with {amount}d{die}{modify:+##;-##;''}, rolling [{String.Join(',', rolls)}] - resulting in [" +
                           Format.Color($"{result}", GetResultFormat(result, mode, die, amount, modify)) + 
                           "]";
-
         }
         
         switch (ctx.Event.Type) {
@@ -47,7 +47,12 @@ public class DiceCommands{
                 ctx.Reply("Dice rolling doesn't work within Whisper Chat");
                 break;
             case ChatMessageType.Team:
-                ctx.Reply("Dice rolling doesn't work within Clan Chat");
+                var clanEntities = UserService.GetClanAllies(ctx.User.LocalCharacter._Entity);
+                foreach (Entity clanentity in clanEntities) {
+                    ServerChatUtils.SendSystemMessageToClient(ServerUtilities.EntityManager,
+                        UserService.GetUser(clanentity),
+                        ref fixedString);
+                }
                 break;
             case ChatMessageType.Local:
                 var users = UserService.GetUsersInRange(PlayerModel.GetCharacterPosition(ctx.User.LocalCharacter._Entity));

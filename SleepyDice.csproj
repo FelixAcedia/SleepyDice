@@ -19,6 +19,7 @@
     <PackageReference Include="VRising.VampireCommandFramework" Version="0.9.*" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Patches\" />
     <Folder Include="Settings\" />
   </ItemGroup>
 </Project>
